@@ -3,7 +3,14 @@ const path = require('node:path');
 const { Client, Collection, GatewayIntentBits } = require('discord.js');
 const { token } = require('./config.json');
 
-const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+const client = new Client({
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.MessageContent,
+    GatewayIntentBits.DirectMessages,
+    GatewayIntentBits.GuildMessages,
+  ],
+});
 
 client.commands = new Collection();
 const commandsPath = path.join(__dirname, 'commands');
@@ -18,13 +25,13 @@ for (const file of commandFiles) {
 }
 
 client.once('ready', () => {
-  console.log('Ready!');
+  console.log(`Ready! Logged in as ${client.user.tag}`);
 });
 
 client.on('interactionCreate', async (interaction) => {
   if (!interaction.isChatInputCommand()) return;
 
-  const command = client.commands.get(interaction.commandName);
+  const command = interaction.client.commands.get(interaction.commandName);
 
   if (!command) return;
 
@@ -36,6 +43,15 @@ client.on('interactionCreate', async (interaction) => {
       content: 'There was an error while executing this command!',
       ephemeral: true,
     });
+  }
+});
+
+client.on('messageCreate', (message) => {
+  if (message.channelId === '1028895351236735017') {
+    if (message.content === 'ok') {
+      console.log(`${message.author.tag}: ${message.content}`);
+      message.reply('ok x2');
+    }
   }
 });
 
