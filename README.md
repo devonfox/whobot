@@ -2,4 +2,8 @@
 
 *Devon Fox 2022*
 
-This discord bot is for self-educational purposes, and is using the `discord.js` framework.
+This discord bot is for self-educational purposes.
+
+## Dependencies
+* `discord.js` framework
+

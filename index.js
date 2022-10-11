@@ -1,6 +1,11 @@
 const fs = require('node:fs');
 const path = require('node:path');
-const { Client, Collection, GatewayIntentBits } = require('discord.js');
+const {
+  Client,
+  Collection,
+  GatewayIntentBits,
+  ChannelType,
+} = require('discord.js');
 const { token } = require('./config.json');
 
 const client = new Client({
@@ -46,11 +51,24 @@ client.on('interactionCreate', async (interaction) => {
   }
 });
 
-client.on('messageCreate', (message) => {
-  if (message.channelId === '1028895351236735017') {
-    if (message.content === 'ok') {
+client.on('messageCreate', async (message) => {
+  if (!message.author.bot && message.channel.type === 'dm') {
+    await message.reply('uh oh');
+  } else if (message.channelId === '1028895351236735017') {
+    const regex1 = new RegExp(/pain/i);
+    const regex2 = /ouch/i;
+    const regex3 = /hurt/i;
+
+    if (
+      message.channel.type === ChannelType.GuildText &&
+      !message.author.bot &&
+      (message.content.match(regex1) ||
+        message.content.match(regex2) ||
+        message.content.match(regex3))
+    ) {
       console.log(`${message.author.tag}: ${message.content}`);
-      message.reply('ok x2');
+
+      await message.reply('oussh me duele');
     }
   }
 });
