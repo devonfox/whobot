@@ -4,7 +4,6 @@ const {
   Client,
   Collection,
   GatewayIntentBits,
-  ChannelType,
 } = require('discord.js');
 const { token } = require('./config.json');
 
@@ -29,48 +28,17 @@ for (const file of commandFiles) {
   client.commands.set(command.data.name, command);
 }
 
-client.once('ready', () => {
-  console.log(`Ready! Logged in as ${client.user.tag}`);
-});
+const eventsPath = path.join(__dirname, 'events');
+const eventFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith('.js'));
 
-client.on('interactionCreate', async (interaction) => {
-  if (!interaction.isChatInputCommand()) return;
-
-  const command = interaction.client.commands.get(interaction.commandName);
-
-  if (!command) return;
-
-  try {
-    await command.execute(interaction);
-  } catch (error) {
-    console.error(error);
-    await interaction.reply({
-      content: 'There was an error while executing this command!',
-      ephemeral: true,
-    });
-  }
-});
-
-client.on('messageCreate', async (message) => {
-  if (!message.author.bot && message.channel.type === 'dm') {
-    await message.reply('uh oh');
-  } else if (message.channelId === '1028895351236735017') {
-    const regex1 = new RegExp(/pain/i);
-    const regex2 = /ouch/i;
-    const regex3 = /hurt/i;
-
-    if (
-      message.channel.type === ChannelType.GuildText &&
-      !message.author.bot &&
-      (message.content.match(regex1) ||
-        message.content.match(regex2) ||
-        message.content.match(regex3))
-    ) {
-      console.log(`${message.author.tag}: ${message.content}`);
-
-      await message.reply('oussh me duele');
-    }
-  }
-});
+for (const file of eventFiles) {
+	const filePath = path.join(eventsPath, file);
+	const event = require(filePath);
+	if (event.once) {
+		client.once(event.name, (...args) => event.execute(...args));
+	} else {
+		client.on(event.name, (...args) => event.execute(...args));
+	}
+}
 
 client.login(token);
