@@ -5,10 +5,7 @@ const {
 module.exports = {
 	name: 'messageCreate',
 	async execute(message) {
-		if (!message.author.bot && message.channel.type === 'dm') {
-			await message.reply('uh oh');
-		}
-		else if (message.channelId === '1028895351236735017') {
+		if (message.channelId === '1028895351236735017') {
 			const regex = new RegExp(/test/i);
 
 			if (
